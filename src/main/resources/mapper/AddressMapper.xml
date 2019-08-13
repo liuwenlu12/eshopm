@@ -1,0 +1,39 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.AddressMapper">
+
+    <select id="queryByUserId" resultType="map">
+        SELECT *
+        FROM address
+        WHERE status = 1
+          AND user_id = #{userId}
+    </select>
+    <insert id="doInsert">
+        INSERT INTO address (address_name, tel_number, detailed_address, user_id)
+        VALUES (#{name}, #{telNumber}, #{address}, #{userId})
+    </insert>
+
+    <update id="updateAddressByUserIdAndAddressId">
+        UPDATE address
+        SET detailed_address = #{address},
+            address_name     = #{name},
+            tel_number       = #{telNumber}
+        WHERE user_id = #{userId}
+          AND address_id = #{addressId}
+    </update>
+
+    <update id="deleteByAddressIdAndUserId">
+        UPDATE address
+        SET status = 0
+        WHERE address_id = #{addressId}
+          AND user_id = #{userId}
+    </update>
+    <select id="queryByAddressId" resultType="map">
+        SELECT *
+        FROM address
+        WHERE address_id = #{addressId}
+    </select>
+
+</mapper>

@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.BrandMapper">
+
+
+    <select id="query"  resultType="map">
+        SELECT * FROM brand WHERE brand_id
+        <if test="typeId != null">
+            IN  (SELECT brand_id FROM product WHERE type_id = #{typeId} AND status = 1 GROUP BY brand_id)
+         </if>
+        <if test="typeId ==null">
+          IN (SELECT brand_id FROM product WHERE status = 1 GROUP BY brand_id)
+       </if>
+    </select>
+
+    <select id="queryByBrandId" resultType="map">
+        SELECT * FROM brand WHERE brand_id = #{brandId}
+    </select>
+
+</mapper>

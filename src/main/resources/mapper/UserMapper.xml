@@ -1,0 +1,71 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.UserMapper">
+
+    <select id="queryByUsernameAndPassword" resultType="map">
+        SELECT *
+        FROM users
+        WHERE username = #{username}
+          AND password = #{password}
+    </select>
+    <select id="queryByUsername" resultType="map">
+        SELECT *
+        FROM users
+        WHERE username = #{username}
+    </select>
+    <select id="queryByUserId" resultType="map">
+        SELECT *
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+    <select id="queryPassWordByUserId" resultType="map">
+        SELECT password
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+    <select id="queryTelNumberByUserId" resultType="map">
+        SELECT tel_number
+        FROM users
+        WHERE user_id = #{userId}
+    </select>
+    <update id="updatePassWord">
+        UPDATE users
+        SET password = #{password}
+        WHERE user_id = #{userId}
+    </update>
+    <select id="queryAllUserId" resultType="map">
+        SELECT *
+        FROM users
+    </select>
+    <select id="queryByTelNumber" resultType="map">
+        SELECT *
+        FROM users
+        WHERE tel_number = #{telNumber}
+    </select>
+    <insert id="doInsert">
+        INSERT INTO users (username, password, tel_number)
+        VALUES (#{username}, #{password}, #{telNumber})
+    </insert>
+    <select id="queryTelNumberByUserNameAndTelNumber" resultType="map">
+        SELECT *
+        FROM users
+        WHERE username = #{username}
+          AND tel_number = #{telNumber}
+    </select>
+    <update id="forgetUpdatePassWord">
+        UPDATE users
+        SET password = #{password}
+        WHERE username = #{username}
+    </update>
+    <select id="queryUserName" resultType="map">
+        SELECT *
+        FROM users
+        WHERE username = #{username}
+    </select>
+
+
+
+
+</mapper>

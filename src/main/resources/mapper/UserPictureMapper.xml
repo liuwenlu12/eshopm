@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.UserPictureMapper">
+    <select id="queryByUserId" resultType="map">
+        SELECT *FROM user_account_pictures WHERE  user_id = #{userId}
+    </select>
+    <insert id="doInsert">
+        INSERT INTO user_account_pictures(user_id, img_url) VALUES (#{userId},#{img_url})
+    </insert>
+    <update id="doUpdate">
+        UPDATE user_account_pictures SET img_url = #{img_url} WHERE user_id = #{userId}
+    </update>
+</mapper>

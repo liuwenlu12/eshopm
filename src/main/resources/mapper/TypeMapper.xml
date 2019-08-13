@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.TypeMapper">
+
+    <select id="queryNav" resultType="map">
+        SELECT * FROM type WHERE type_id IN (SELECT type_id FROM product GROUP BY type_id)
+    </select>
+    <select id="queryByTypeId" parameterType="Integer" resultType="map">
+        SELECT * FROM type WHERE type_id = #{typeId}
+    </select>
+
+</mapper>

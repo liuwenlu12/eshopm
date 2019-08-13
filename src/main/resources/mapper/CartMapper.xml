@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.CartMapper">
+
+    <select id="queryByUserId" resultType="map">
+        SELECT * FROM cart t1,property t2,product t3 WHERE t1.property_id = t2.property_id AND t2.product_id = t3.product_id AND t1.user_id = #{userId}
+    </select>
+
+    <insert id="doInsert">
+        <selectKey keyProperty="propertyId" resultType="int" order="BEFORE" statementType="PREPARED">
+            SELECT property_id FROM property WHERE color = #{color} AND product_id = #{productId}
+        </selectKey>
+        INSERT INTO cart (amount, property_id, user_id)VALUES(#{amount},#{propertyId},#{userId})
+    </insert>
+    <select id="queryTotal" resultType="map">
+        SELECT SUM(old_price*amount)-SUM(price*amount) total_discounts,SUM(amount) total_amount,SUM(amount*price) total_price FROM cart t1, property t2,product t3 WHERE t1.property_id = t2.property_id AND t2.product_id = t3.product_id  AND t1.user_id = #{userId} AND cart_id IN(
+        <foreach collection="cartIds" item="cartId" separator=",">
+            #{cartId}
+        </foreach>
+            )
+    </select>
+    <select id="queryByUserIdANDProductIdANDColor" resultType="map">
+        SELECT * FROM cart WHERE user_id = #{userId} AND property_id =(SELECT property_id FROM property WHERE color = #{color} AND product_id = #{productId})
+    </select>
+    <update id="addAmount" >
+        UPDATE cart SET amount = amount +1 WHERE user_id = #{userId} AND property_id = (SELECT property_id FROM property WHERE color = #{color} AND product_id = #{productId})
+    </update>
+    <update id="subAmount" >
+        UPDATE cart SET amount = amount -1 WHERE user_id = #{userId} AND property_id = (SELECT property_id FROM property WHERE color = #{color} AND product_id = #{productId})
+    </update>
+    <delete id="doDelete">
+        DELETE FROM cart WHERE
+        <if test="cartId==null">
+        user_id = #{userId} AND property_id = (SELECT property_id FROM property WHERE color = #{color} AND product_id = #{productId})
+         </if>
+         <if test="cartId!=null">
+             cart_id = #{cartId}
+         </if>
+    </delete>
+    <select id="queryIsCartOverAmount" resultType="map">
+        SELECT * FROM cart,property WHERE cart.property_id = property.property_id AND cart_id = #{cartId} AND property.property_id =(SELECT property_id FROM property WHERE color = #{color} AND product_id = #{productId})  AND amount+1 &lt;=	inventory
+    </select>
+    <select id="queryProduct4Checkout" resultType="map">
+        SELECT * FROM cart t1, property t2,product t3 WHERE t1.property_id = t2.property_id AND t2.product_id = t3.product_id  AND t1.user_id = #{userId} AND cart_id IN(
+        <foreach collection="cartIds" item="cartId" separator=",">
+            #{cartId}
+        </foreach>
+            )
+    </select>
+
+    <select id="queryByUserIdANDProductId" resultType="map">
+        SELECT * FROM cart t1,property t2,product t3 WHERE t1.property_id = t2.property_id AND t2.product_id = t3.product_id AND t1.user_id = #{userId} AND t3.product_id = #{productId}
+    </select>
+    <update id="updateAmount">
+        <selectKey keyProperty="propertyId" resultType="int" order="BEFORE" statementType="PREPARED">
+            SELECT property_id FROM property WHERE color = #{color} AND product_id = #{productId}
+        </selectKey>
+        UPDATE cart SET amount = amount + #{amount} WHERE user_id = #{userId} AND property_id = #{propertyId}
+    </update>
+
+
+</mapper>

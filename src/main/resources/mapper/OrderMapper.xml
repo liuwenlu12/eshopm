@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.OrderMapper">
+
+<insert id="doInsert" parameterType="map" useGeneratedKeys="true" keyProperty="orderId" >
+    INSERT INTO orders(user_id, address_id,payment,logistics)VALUES (#{userId},#{addressId},#{payment},#{logistics})
+</insert>
+
+    <insert id="doInsertDetail">
+        INSERT INTO order_detail ( order_id, product_id, name, img_url, price, amount, color, user_id) VALUES(#{order_id},#{product_id},#{product_name},#{img_url},#{price},#{amount},#{color},#{user_id})
+    </insert>
+    <select id="queryByUserId" resultType="map">
+        SELECT * FROM orders
+        <if test="isConfirm!=null">
+            WHERE user_id= #{userId}   and status = 0
+        </if>
+        <if test="isAppraise!=null">
+
+            ,order_detail  WHERE orders.order_id=order_detail.order_id and orders.user_id= #{userId} and orders.status = 1 and order_detail.status=0 group by orders.order_id
+        </if>
+        <if test="isConfirm==null and isAppraise==null">
+            WHERE user_id= #{userId}
+        </if>
+        ORDER BY orders.add_time DESC
+
+    </select>
+    <select id="getTotalPrice" resultType="Double">
+        SELECT SUM(order_detail.amount*order_detail.price) total_price FROM orders,order_detail WHERE orders.order_id = order_detail.order_id AND orders.order_id = #{orderId}
+    </select>
+    <select id="queryProductByOrderId" resultType="map">
+        SELECT order_detail.detail_id,order_detail.product_id,order_detail.img_url,order_detail.name,order_detail.price,order_detail.amount,order_detail.color,order_detail.status FROM orders,order_detail WHERE orders.order_id = order_detail.order_id AND orders.order_id = #{orderId} ORDER BY orders.add_time DESC
+    </select>
+    <update id="doChangeStatus">
+        UPDATE orders SET status = 1 WHERE user_Id = #{userId} AND order_id = #{orderId} AND status = 0
+    </update>
+    <update id="updateOrderDetail">
+        UPDATE order_detail SET content = #{content} ,add_time=current_timestamp WHERE detail_Id = #{detailId}
+    </update>
+    <update id="doUpdateDetailStatus">
+        UPDATE order_detail SET status = 1 WHERE detail_id = #{detailId}
+    </update>
+    <select id="queryByUserIdANDOrderId" resultType="map">
+        SELECT * FROM orders,order_detail,address WHERE orders.order_id = order_detail.order_id AND address.address_id = orders.address_id AND ORDERS.user_id = #{userId} AND orders.order_id = #{orderId} ORDER BY orders.add_time DESC
+    </select>
+    <select id="queryDetailByDetailId" resultType="map">
+        SELECT * FROM order_detail WHERE detail_id = #{detailId}
+    </select>
+    <select id="countOrder" resultType="int">
+        SELECT count(order_id) FROM orders WHERE user_id =#{userId}
+    </select>
+    <select id="countOrderByOrderStatus" resultType="int">
+        SELECT count(order_id) FROM orders WHERE  user_id= #{userId}   and status = 0
+    </select>
+    <select id="countOrderByOrderStatusAndDetailStatus" resultType="int">
+        SELECT count(orders.order_id)  FROM orders ,order_detail  WHERE orders.order_id=order_detail.order_id and orders.user_id= #{userId} and orders.status = 1 and order_detail.status=0
+    </select>
+</mapper>

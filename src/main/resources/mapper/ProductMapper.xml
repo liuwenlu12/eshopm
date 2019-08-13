@@ -1,0 +1,132 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.ProductMapper">
+
+
+    <!-- <select id="queryAll" resultType="map">
+         SELECT * FROM product WHERE status = 1
+     </select>-->
+
+    <!-- <select id="query" parameterType="map" resultType="map">
+         SELECT * FROM product where status = 1
+            <if test="brandId!=null and typeId!=null">
+                 and brand_id = #{brandId} and type_id = #{typeId}
+            </if>
+             <if test="typeId !=null" >
+                 and type_id = #{typeId}
+             </if>
+             <if test="brandId !=null">
+                 and brand_id = #{brandId}
+             </if>
+           <if test="name!=null">
+               and product_name LIKE CONCAT('%',#{name},'%')
+           </if>
+     </select>-->
+
+    <select id="query" parameterType="map" resultType="map">
+        SELECT * FROM product where status = 1
+        <if test="typeId !=null">
+            and type_id = #{typeId}
+        </if>
+        <if test="brandId !=null">
+            and brand_id = #{brandId}
+        </if>
+        <if test="name!=null">
+            and product_name LIKE CONCAT('%',#{name},'%')
+        </if>
+        <if test="saleDesc!=null">
+            ORDER BY sales_volume DESC
+        </if>
+        <if test="saleUp!=null">
+            ORDER BY sales_volume
+        </if>
+        <if test="priceDesc!=null">
+            ORDER BY price DESC
+        </if>
+        <if test="priceUp!=null">
+            ORDER BY price
+        </if>
+    </select>
+
+
+    <select id="queryBySales" resultType="map">
+        SELECT *
+        FROM product
+        WHERE status = 1
+        ORDER BY sales_volume DESC
+    </select>
+
+    <select id="queryByAddTime" resultType="map">
+        SELECT *
+        FROM product
+        WHERE status = 1
+        ORDER BY add_time DESC
+    </select>
+
+    <select id="queryByPriceAndOldPrice" resultType="map">
+        SELECT *
+        FROM product
+        WHERE old_price - price >= 500
+        ORDER BY old_price - price DESC
+    </select>
+
+    <select id="queryByProductId" resultType="map">
+        SELECT *
+        FROM product
+        WHERE product_id = #{productId}
+          AND status = 1;
+    </select>
+
+    <select id="queryTypeByProductId" resultType="map">
+        SELECT *
+        FROM product
+        WHERE type_id = (SELECT type_id FROM product WHERE product_id = #{productId})
+    </select>
+    <select id="queryByPrice" resultType="map">
+        SELECT *
+        FROM product
+        WHERE status = 1
+        ORDER BY price
+    </select>
+    <!-- <update id="updateInventoryAndSalesVolume">
+         UPDATE property SET inventory = inventory - #{amount} WHERE product_id = #{productId} AND color = #{color};
+         UPDATE product SET sales_volume = sales_volume + #{amount} WHERE product_id = #{productId}
+     </update>-->
+    <update id="updateSalesVolume">
+        UPDATE product
+        SET sales_volume = sales_volume + #{amount}
+        WHERE product_id = #{productId}
+    </update>
+
+    <select id="queryAppraiseByUserIdANDProductId" resultType="map">
+        SELECT *
+        FROM appraise
+        WHERE user_id = #{userId}
+          AND product_id = #{productId}
+    </select>
+    <insert id="doInsertAppraise">
+        INSERT INTO appraise (product_id, user_id, detail_id)
+        VALUES (#{productId}, #{userId}, #{detailId})
+    </insert>
+    <select id="queryAppraiseByProductIdAndUserId" resultType="map">
+        SELECT *
+        FROM APPRAISE,
+             ORDER_DETAIL,
+             USERS
+        WHERE APPRAISE.PRODUCT_ID = ORDER_DETAIL.PRODUCT_ID
+          AND USERS.USER_ID = APPRAISE.USER_ID
+          AND order_detail.USER_ID = APPRAISE.USER_ID
+          AND APPRAISE.PRODUCT_ID = #{productId}
+          AND users.user_id = #{userId}
+          AND ORDER_DETAIL.status = 1
+        ORDER BY ORDER_DETAIL.add_time DESC
+    </select>
+
+    <select id="queryProduct4buy" resultType="map">
+        SELECT product.product_id,color,old_price,inventory,property.img_url,price,product_name FROM product ,property WHERE product.product_id = property.product_id and product.product_id = #{productId} and color= #{color}
+    </select>
+
+
+</mapper>

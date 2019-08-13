@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper
+        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.oaec.eshopm.mapper.PropertyMapper">
+
+    <select id="queryByProductId" resultType="map">
+        SELECT * FROM property WHERE product_id = #{productId}
+    </select>
+    <select id="queryByColorAndProductId"  resultType="map">
+        SELECT inventory FROM property WHERE color = #{color} AND product_id = #{productId}
+    </select>
+    <update id="updateInventory">
+        UPDATE property SET inventory = inventory - #{amount} WHERE product_id = #{productId} AND color = #{color}
+    </update>
+</mapper>
